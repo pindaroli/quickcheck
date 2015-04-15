@@ -36,12 +36,24 @@ property("min2") = forAll { a: Int =>
         true
     }
   }
+  property("continuosOrdered") = forAll {h: H =>
+    isSubOrdered(h)
+   }
   property("ordered") = forAll{h: H =>
-    val l=linearize(h)
-    if (isOrdered(l)) true else false;
+    isOrdered(linearize(h))
   }
+  
+  property("meldOrdered") = forAll{ h1: H =>
+    forAll {h2: H =>
+      isOrdered(linearize(meld(h1,h2)))
+      }
+    }
  
- 
+  def isSubOrdered(h:H): Boolean = {
+    if (isEmpty(h)) true
+    else
+      (isOrdered(linearize(h)) && isSubOrdered(deleteMin(h)))
+  }
   def isOrdered(l:List[Int]): Boolean = l match {
     case Nil => true  
     case x::xs => if (xs.isEmpty) true else x<=xs.head && isOrdered(xs) 
